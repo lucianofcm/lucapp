@@ -32,12 +32,6 @@ public class HelloController {
 
 	@GetMapping("/helloMessage")
 	public String greetingMessage() throws IOException {
-		List<File> files = googleAuthConfig.getGoogleAuthorizationCondeFlow().files().list().setPageSize(1000)
-				.setFields("nextPageToken, files(id, name)").execute().getFiles();
-		for (File file : files) {
-			System.out.printf("%s (%s)\n", file.getName(), file.getId());
-		}
-
 		return "Welcome to Hello Spring Boot Application!";
 	}
 
