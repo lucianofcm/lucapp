@@ -21,8 +21,8 @@ import br.com.lucapp.config.GoogleAuthorizationCodeFlowConfig;
 import br.com.lucapp.model.ArquivoDTO;
 
 @RestController
-@RequestMapping("hello")
-public class HelloController {
+@RequestMapping("drive")
+public class DriveController {
 
 	@Autowired
 	public GoogleAuthorizationCodeFlowConfig googleAuthConfig;
@@ -35,27 +35,6 @@ public class HelloController {
 		return "Welcome to Hello Spring Boot Application!";
 	}
 
-	@GetMapping("/downloadFile/{fileCode}")
-	public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
-		FileDownloadUtil downloadUtil = new FileDownloadUtil();
-
-		Resource resource = null;
-		try {
-			resource = downloadUtil.getFileAsResource(fileCode);
-		} catch (IOException e) {
-			return ResponseEntity.internalServerError().build();
-		}
-
-		if (resource == null) {
-			return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
-		}
-
-		String contentType = "application/octet-stream";
-		String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
-
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
-				.header(HttpHeaders.CONTENT_DISPOSITION, headerValue).body(resource);
-	}
 
 	@GetMapping("/download/{nomeArquivo}")
 	public ResponseEntity<?> download(@PathVariable("nomeArquivo") String nomeArquivo) throws IOException {
