@@ -5,16 +5,23 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 import br.com.lucapp.model.ArquivoDTO;
 
@@ -23,25 +30,8 @@ public class FileDownloadUtil {
 
 	@Autowired
 	public GoogleAuthorizationCodeFlowConfig googleAuthConfig;
-
-	private Path foundFile;
-
-	public Resource getFileAsResource(String fileCode) throws IOException {
-		Path dirPath = Paths.get("Files-Upload");
-
-		Files.list(dirPath).forEach(file -> {
-			if (file.getFileName().toString().startsWith(fileCode)) {
-				foundFile = file;
-				return;
-			}
-		});
-
-		if (foundFile != null) {
-			return new UrlResource(foundFile.toUri());
-		}
-
-		return null;
-	}
+	@Autowired
+	ServletContext context;
 
 	public ArquivoDTO getFileDrive(String nomeArquivo) throws IOException {
 		InputStream inputStream;
@@ -66,6 +56,21 @@ public class FileDownloadUtil {
 		return arquivo;
 	}
 
+	public void uploadArquivo(MultipartFile arquivo,String nomePastaDestino) throws IllegalStateException, IOException {
+
+		java.io.File convFile = new java.io.File(
+				System.getProperty("java.io.tmpdir") + "/" + arquivo.getName());
+		File fileMetadata = new File();
+		fileMetadata.setName(arquivo.getOriginalFilename());
+		fileMetadata.setMimeType(arquivo.getContentType());
+
+		arquivo.transferTo(convFile);
+		FileContent mediaContent = new FileContent(fileMetadata.getMimeType(), convFile);
+		fileMetadata.setParents(Collections.singletonList(pesquisarPasta(nomePastaDestino)));
+		googleAuthConfig.getGoogleAuthorizationCondeFlow().files().create(fileMetadata, mediaContent).setFields("id")
+				.execute();
+	}
+
 	public String setFolder(String nomePasta) throws IOException {
 
 		File fileMetadata = new File();
@@ -75,4 +80,23 @@ public class FileDownloadUtil {
 				.setFields("id").execute();
 		return pastaCriada.getId();
 	}
+
+	public String pesquisarPasta(String nomePasta) throws IOException {
+		String pageToken = null;
+		List<File> files = new ArrayList<>();
+		do {
+			FileList result = googleAuthConfig.getGoogleAuthorizationCondeFlow().files().list().setSpaces("drive")
+					.setFields("nextPageToken, files(id, name)").setPageToken(pageToken).execute();
+			Optional<File> arquivoLocalizado = result.getFiles().stream()
+					.filter(file -> file.getName().startsWith(nomePasta)).findAny();
+			if (arquivoLocalizado.isPresent()) {
+				return arquivoLocalizado.get().getId();
+			}
+
+			pageToken = result.getNextPageToken();
+		} while (pageToken != null);
+
+		return null;
+	}
+
 }

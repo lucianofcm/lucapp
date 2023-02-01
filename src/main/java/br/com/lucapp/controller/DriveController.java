@@ -11,8 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.api.services.drive.model.File;
 
@@ -35,7 +39,6 @@ public class DriveController {
 		return "Welcome to Hello Spring Boot Application!";
 	}
 
-
 	@GetMapping("/download/{nomeArquivo}")
 	public ResponseEntity<?> download(@PathVariable("nomeArquivo") String nomeArquivo) throws IOException {
 
@@ -47,13 +50,14 @@ public class DriveController {
 			return new ResponseEntity<>("Arquivo não encontrado", HttpStatus.NOT_FOUND);
 		}
 
-		//String headerValue = "attachment; filename=\"" + arquivo.getNomeArquivo() + "\"";
-		//headers.set(HttpHeaders.CONTENT_DISPOSITION, headerValue);
+		// String headerValue = "attachment; filename=\"" + arquivo.getNomeArquivo() +
+		// "\"";
+		// headers.set(HttpHeaders.CONTENT_DISPOSITION, headerValue);
 
 		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).headers(headers).body(arquivo.getArquivo());
 
 	}
-	
+
 	@GetMapping("/pasta/{nomePasta}")
 	public ResponseEntity<?> criarPasta(@PathVariable("nomePasta") String nomePasta) throws IOException {
 
@@ -65,10 +69,34 @@ public class DriveController {
 			return new ResponseEntity<>("Pasta não criada", HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
-
 		return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).headers(headers).body(arquivo);
 
 	}
-	
-	
+
+	@PostMapping("/upload")
+	public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes,
+			@RequestParam("pastaDestino") String pastaDestino) throws IllegalStateException, IOException {
+
+		redirectAttributes.addFlashAttribute("message",
+				"You successfully uploaded " + file.getOriginalFilename() + "!");
+		fileDownloadUtil.uploadArquivo(file,pastaDestino);
+
+		return "redirect:/";
+	}
+
+	@GetMapping("/pasta/get/{nomePasta}")
+	public ResponseEntity<?> pesquisarPasta(@PathVariable("nomePasta") String nomePasta) throws IOException {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		String files = fileDownloadUtil.pesquisarPasta(nomePasta);
+
+		if (files.isEmpty()) {
+			return new ResponseEntity<>("Pasta não criada", HttpStatus.METHOD_NOT_ALLOWED);
+		}
+
+		return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).headers(headers).body("");
+
+	}
+
 }

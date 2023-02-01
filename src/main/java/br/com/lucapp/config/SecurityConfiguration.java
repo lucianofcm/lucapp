@@ -20,7 +20,7 @@ public class SecurityConfiguration {
 	private String issuer;
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests().mvcMatchers(HttpMethod.GET, AUTH_WHITELIST).permitAll()// GET requests don't
 				.anyRequest().authenticated().and().oauth2ResourceServer().jwt().decoder(jwtDecoder());
 		return http.build();
@@ -37,7 +37,7 @@ public class SecurityConfiguration {
 	}
 	private static final String[] AUTH_WHITELIST = {
 	        "/swagger-resources/**",
-	        "/swagger-ui.html",
+	        "/swagger-ui/**",
 	        "/v2/api-docs",
 	        "/webjars/**"
 	};
