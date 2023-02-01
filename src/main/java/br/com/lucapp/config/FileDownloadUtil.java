@@ -56,10 +56,10 @@ public class FileDownloadUtil {
 		return arquivo;
 	}
 
-	public void uploadArquivo(MultipartFile arquivo,String nomePastaDestino) throws IllegalStateException, IOException {
+	public void uploadArquivo(MultipartFile arquivo, String nomePastaDestino)
+			throws IllegalStateException, IOException {
 
-		java.io.File convFile = new java.io.File(
-				System.getProperty("java.io.tmpdir") + "/" + arquivo.getName());
+		java.io.File convFile = new java.io.File(System.getProperty("java.io.tmpdir") + "/" + arquivo.getName());
 		File fileMetadata = new File();
 		fileMetadata.setName(arquivo.getOriginalFilename());
 		fileMetadata.setMimeType(arquivo.getContentType());
@@ -83,7 +83,7 @@ public class FileDownloadUtil {
 
 	public String pesquisarPasta(String nomePasta) throws IOException {
 		String pageToken = null;
-		List<File> files = new ArrayList<>();
+
 		do {
 			FileList result = googleAuthConfig.getGoogleAuthorizationCondeFlow().files().list().setSpaces("drive")
 					.setFields("nextPageToken, files(id, name)").setPageToken(pageToken).execute();
