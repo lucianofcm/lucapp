@@ -23,6 +23,7 @@ public class SecurityConfiguration {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests().mvcMatchers(HttpMethod.GET, AUTH_WHITELIST).permitAll()// GET requests don't
 				.anyRequest().authenticated().and().oauth2ResourceServer().jwt().decoder(jwtDecoder());
+		http.cors();
 		return http.build();
 	}
 
