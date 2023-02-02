@@ -74,12 +74,12 @@ public class DriveController {
 
 	}
 
-	@PostMapping(value="/upload")
-	public String handleFileUpload(@RequestPart("file") MultipartFile uploadFile,
+	@PostMapping(value="/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	public String handleFileUpload( @RequestParam("file") MultipartFile[] files,
 			@RequestParam("pastaDestino") String pastaDestino) throws IllegalStateException, IOException {
 
-		
-		fileDownloadUtil.uploadArquivo(uploadFile,pastaDestino);
+		System.out.println("ENTROU");
+		//fileDownloadUtil.uploadArquivo(uploadFile,pastaDestino);
 
 		return "redirect:/";
 	}
