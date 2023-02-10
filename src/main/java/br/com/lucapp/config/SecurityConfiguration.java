@@ -24,6 +24,7 @@ public class SecurityConfiguration {
 		http.authorizeRequests().mvcMatchers(HttpMethod.GET, AUTH_WHITELIST).permitAll()// GET requests don't
 				.anyRequest().authenticated().and().oauth2ResourceServer().jwt().decoder(jwtDecoder());
 		http.cors();
+		http.headers().frameOptions().disable();
 		return http.build();
 	}
 
@@ -40,7 +41,9 @@ public class SecurityConfiguration {
 	        "/swagger-resources/**",
 	        "/swagger-ui/**",
 	        "/v2/api-docs",
-	        "/webjars/**"
+	        "/webjars/**",
+	        "/drive/helloMessage",
+	        "/drive/**"
 	};
 
 
