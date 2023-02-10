@@ -21,10 +21,17 @@ public class SecurityConfiguration {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests().mvcMatchers(HttpMethod.GET, AUTH_WHITELIST).permitAll()// GET requests don't
-				.anyRequest().authenticated().and().oauth2ResourceServer().jwt().decoder(jwtDecoder());
+		/*
+		 * http.authorizeRequests().mvcMatchers(HttpMethod.GET,
+		 * AUTH_WHITELIST).permitAll()// GET requests don't
+		 * .anyRequest().authenticated().and().oauth2ResourceServer().jwt().decoder(
+		 * jwtDecoder());
+		 */
+		
+		http.authorizeHttpRequests(authCustomizer -> authCustomizer
+                .mvcMatchers(HttpMethod.POST, "/drive/upload").permitAll());
 		http.cors();
-		http.headers().frameOptions().disable();
+		http.csrf().disable();
 		return http.build();
 	}
 
@@ -41,9 +48,7 @@ public class SecurityConfiguration {
 	        "/swagger-resources/**",
 	        "/swagger-ui/**",
 	        "/v2/api-docs",
-	        "/webjars/**",
-	        "/drive/helloMessage",
-	        "/drive/**"
+	        "/webjars/**"
 	};
 
 
