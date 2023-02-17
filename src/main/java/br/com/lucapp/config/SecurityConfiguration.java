@@ -30,7 +30,7 @@ public class SecurityConfiguration {
 		
 		http.authorizeHttpRequests(authCustomizer -> authCustomizer
                 .mvcMatchers(HttpMethod.POST, "/drive/upload").permitAll());
-		http.cors();
+		http.cors().disable();
 		http.csrf().disable();
 		return http.build();
 	}

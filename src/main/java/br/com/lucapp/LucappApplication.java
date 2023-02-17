@@ -27,6 +27,7 @@ public class LucappApplication {
 
 	 @Bean
 	 public MultipartResolver multipartResolver() {
+		 System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
 	     org.springframework.web.multipart.commons.CommonsMultipartResolver multipartResolver = new org.springframework.web.multipart.commons.CommonsMultipartResolver();
 	     multipartResolver.setMaxUploadSize(1000000);
 	     return multipartResolver;

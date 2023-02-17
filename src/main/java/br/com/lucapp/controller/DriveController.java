@@ -64,9 +64,9 @@ public class DriveController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		String arquivo = fileDownloadUtil.setFolder(nomePasta);
+		boolean arquivo = fileDownloadUtil.setFolder(nomePasta);
 
-		if (arquivo == null) {
+		if (arquivo) {
 			return new ResponseEntity<>("Pasta não criada", HttpStatus.METHOD_NOT_ALLOWED);
 		}
 

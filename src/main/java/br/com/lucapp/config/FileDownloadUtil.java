@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.ServletContext;
@@ -71,14 +72,16 @@ public class FileDownloadUtil {
 				.execute();
 	}
 
-	public String setFolder(String nomePasta) throws IOException {
-
+	public boolean setFolder(String nomePasta) throws IOException {
+		String idPasta = "";
 		File fileMetadata = new File();
 		fileMetadata.setName(nomePasta);
+		fileMetadata.setParents(Collections.singletonList(pesquisarPasta("RECIBOS")));
 		fileMetadata.setMimeType("application/vnd.google-apps.folder");
 		File pastaCriada = googleAuthConfig.getGoogleAuthorizationCondeFlow().files().create(fileMetadata)
-				.setFields("id").execute();
-		return pastaCriada.getId();
+				.setFields("parents").execute();
+		idPasta = pastaCriada.entrySet().stream().findAny().get().getValue().toString();
+		return  pesquisarPasta(idPasta) != null;
 	}
 
 	public String pesquisarPasta(String nomePasta) throws IOException {
