@@ -64,9 +64,9 @@ public class DriveController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		boolean arquivo = fileDownloadUtil.setFolder(nomePasta);
+		String arquivo = fileDownloadUtil.setFolder(nomePasta);
 
-		if (arquivo) {
+		if (arquivo != null && arquivo.isEmpty()) {
 			return new ResponseEntity<>("Pasta não criada", HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
@@ -91,11 +91,11 @@ public class DriveController {
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		String files = fileDownloadUtil.pesquisarPasta(nomePasta);
 
-		if (files.isEmpty()) {
+		if (files != null && files.isEmpty()) {
 			return new ResponseEntity<>("Pasta não criada", HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
-		return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).headers(headers).body("");
+		return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).headers(headers).body(files);
 
 	}
 

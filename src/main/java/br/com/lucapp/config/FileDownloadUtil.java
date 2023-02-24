@@ -72,7 +72,7 @@ public class FileDownloadUtil {
 				.execute();
 	}
 
-	public boolean setFolder(String nomePasta) throws IOException {
+	public String setFolder(String nomePasta) throws IOException {
 		String idPasta = "";
 		File fileMetadata = new File();
 		fileMetadata.setName(nomePasta);
@@ -81,12 +81,12 @@ public class FileDownloadUtil {
 		File pastaCriada = googleAuthConfig.getGoogleAuthorizationCondeFlow().files().create(fileMetadata)
 				.setFields("parents").execute();
 		idPasta = pastaCriada.entrySet().stream().findAny().get().getValue().toString();
-		return  pesquisarPasta(idPasta) != null;
+		return  idPasta ;
 	}
 
 	public String pesquisarPasta(String nomePasta) throws IOException {
 		String pageToken = null;
-
+		
 		do {
 			FileList result = googleAuthConfig.getGoogleAuthorizationCondeFlow().files().list().setSpaces("drive")
 					.setFields("nextPageToken, files(id, name)").setPageToken(pageToken).execute();
@@ -94,12 +94,14 @@ public class FileDownloadUtil {
 					.filter(file -> file.getName().startsWith(nomePasta)).findAny();
 			if (arquivoLocalizado.isPresent()) {
 				return arquivoLocalizado.get().getId();
-			}
+			} 
 
 			pageToken = result.getNextPageToken();
 		} while (pageToken != null);
 
 		return null;
 	}
+	
+
 
 }
