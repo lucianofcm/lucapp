@@ -51,9 +51,6 @@ public class DriveController {
 			return new ResponseEntity<>("Arquivo não encontrado", HttpStatus.NOT_FOUND);
 		}
 
-		// String headerValue = "attachment; filename=\"" + arquivo.getNomeArquivo() +
-		// "\"";
-		// headers.set(HttpHeaders.CONTENT_DISPOSITION, headerValue);
 
 		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).headers(headers).body(arquivo.getArquivo());
 
